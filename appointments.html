@@ -1,0 +1,55 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}My Appointments - Alzheimer's Support{% endblock %}
+{% block page_title %}My Appointments{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h5><i class="bi bi-hourglass-split"></i> Pending Requests</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if pending_requests %}
+        <table class="table">
+            <thead><tr><th>Doctor</th><th>Date</th><th>Time</th><th>Reason</th><th>Status</th></tr></thead>
+            <tbody>
+                {% for a in pending_requests %}
+                <tr>
+                    <td><strong>Dr. {{ a.doctor.name }}</strong></td>
+                    <td>{{ a.appointment_date }}</td>
+                    <td>{{ a.appointment_time }}</td>
+                    <td><small>{{ a.reason|default:"—"|truncatechars:40 }}</small></td>
+                    <td><span class="status-badge pending">Awaiting Doctor's Approval</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}<div class="empty-state"><p>No pending requests.</p></div>{% endif %}
+    </div>
+</div>
+
+<div class="content-card">
+    <div class="card-header">
+        <h5><i class="bi bi-calendar-event"></i> All Appointments</h5>
+        <div class="card-actions"><a href="{% url 'find_doctors' %}" class="btn btn-primary btn-sm"><i class="bi bi-search-heart"></i> Find a Doctor</a></div>
+    </div>
+    <div class="card-body p-0">
+        {% if appointments %}
+        <table class="table">
+            <thead><tr><th>Doctor</th><th>Date</th><th>Time</th><th>Reason</th><th>Status</th></tr></thead>
+            <tbody>
+                {% for a in appointments %}
+                <tr>
+                    <td><strong>Dr. {{ a.doctor.name }}</strong><br><small class="text-muted">{{ a.doctor.get_specialization_display }}</small></td>
+                    <td>{{ a.appointment_date }}</td>
+                    <td>{{ a.appointment_time }}</td>
+                    <td><small>{{ a.reason|default:"—"|truncatechars:40 }}</small></td>
+                    <td><span class="status-badge {{ a.status }}">{{ a.get_status_display }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}<div class="empty-state"><i class="bi bi-calendar-x"></i><p>No appointments yet. <a href="{% url 'find_doctors' %}">Find a doctor</a> to book one.</p></div>{% endif %}
+    </div>
+</div>
+{% endblock %}

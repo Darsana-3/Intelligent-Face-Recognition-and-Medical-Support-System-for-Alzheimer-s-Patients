@@ -1,0 +1,28 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Prescription - Alzheimer's Support{% endblock %}
+{% block page_title %}Prescription Detail{% endblock %}
+{% block sidebar_nav %}{% include 'doctor_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h5><i class="bi bi-clipboard2-pulse"></i> Prescription for {{ prescription.patient.name }}</h5>
+        <div class="card-actions"><small class="text-muted">{{ prescription.created_at|date:"M d, Y" }}</small></div>
+    </div>
+    <div class="card-body">
+        <p><strong>Diagnosis:</strong> {{ prescription.diagnosis }}</p>
+        {% if prescription.notes %}<p><strong>Notes:</strong> {{ prescription.notes }}</p>{% endif %}
+        <hr>
+        <h6 class="mb-3">Medicines Prescribed</h6>
+        <table class="table">
+            <thead><tr><th>Name</th><th>Dosage</th><th>Frequency</th><th>Time</th><th>Duration</th><th>Instructions</th></tr></thead>
+            <tbody>
+                {% for m in medicines %}
+                <tr><td><strong>{{ m.name }}</strong></td><td>{{ m.dosage }}</td><td>{{ m.get_frequency_display }}</td><td>{% for t in m.timings.all %}{{ t.time|time:"h:i A" }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</td><td>{{ m.duration_days }}d</td><td>{{ m.instructions|default:"—" }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'prescriptions_list' %}" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Back</a>
+    </div>
+</div>
+{% endblock %}

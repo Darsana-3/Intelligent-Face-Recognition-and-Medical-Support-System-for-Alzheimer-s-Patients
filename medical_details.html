@@ -1,0 +1,57 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Medical Details - Alzheimer's Support{% endblock %}
+{% block page_title %}My Medical Details{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <div class="content-card">
+        <div class="card-header"><h5><i class="bi bi-heart-pulse"></i> Basic Medical Info</h5></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4"><label class="form-label">Blood Group</label>
+                    <select class="form-select" name="blood_group">
+                        <option value="">Select</option>
+                        <option value="A+" {% if patient.blood_group == 'A+' %}selected{% endif %}>A+</option>
+                        <option value="A-" {% if patient.blood_group == 'A-' %}selected{% endif %}>A-</option>
+                        <option value="B+" {% if patient.blood_group == 'B+' %}selected{% endif %}>B+</option>
+                        <option value="B-" {% if patient.blood_group == 'B-' %}selected{% endif %}>B-</option>
+                        <option value="O+" {% if patient.blood_group == 'O+' %}selected{% endif %}>O+</option>
+                        <option value="O-" {% if patient.blood_group == 'O-' %}selected{% endif %}>O-</option>
+                        <option value="AB+" {% if patient.blood_group == 'AB+' %}selected{% endif %}>AB+</option>
+                        <option value="AB-" {% if patient.blood_group == 'AB-' %}selected{% endif %}>AB-</option>
+                    </select>
+                </div>
+                <div class="col-md-6"><label class="form-label">Alzheimer's Stage</label>
+                    <select class="form-select" name="alzheimer_stage">
+                        {% for v,l in patient.STAGE_CHOICES %}<option value="{{ v }}" {% if patient.alzheimer_stage == v %}selected{% endif %}>{{ l }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <div class="alert alert-info mb-0 w-100 py-2 px-3">
+                        <i class="bi bi-info-circle"></i> To see a doctor, use <a href="{% url 'find_doctors' %}">Find a Doctor</a> to search and book an appointment. Once a doctor approves your request, they'll appear as your assigned doctor automatically.
+                    </div>
+                </div>
+                <div class="col-md-6"><label class="form-label">Allergies</label><textarea class="form-control" name="allergies" rows="2">{{ patient.allergies|default:'' }}</textarea></div>
+                <div class="col-md-6"><label class="form-label">Medical History</label><textarea class="form-control" name="medical_history" rows="2">{{ patient.medical_history|default:'' }}</textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <div class="card-header"><h5><i class="bi bi-journal-medical"></i> Detailed Records</h5></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6"><label class="form-label">Chronic Conditions</label><textarea class="form-control" name="chronic_conditions" rows="2">{{ medical.chronic_conditions|default:'' }}</textarea></div>
+                <div class="col-md-6"><label class="form-label">Past Surgeries</label><textarea class="form-control" name="past_surgeries" rows="2">{{ medical.past_surgeries|default:'' }}</textarea></div>
+                <div class="col-md-6"><label class="form-label">Family History</label><textarea class="form-control" name="family_history" rows="2">{{ medical.family_history|default:'' }}</textarea></div>
+                <div class="col-md-6"><label class="form-label">Current Medications (free text)</label><textarea class="form-control" name="current_medications" rows="2">{{ medical.current_medications|default:'' }}</textarea></div>
+                <div class="col-12"><label class="form-label">Additional Notes</label><textarea class="form-control" name="notes" rows="3">{{ medical.notes|default:'' }}</textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-check-circle"></i> Save Medical Details</button>
+</form>
+{% endblock %}

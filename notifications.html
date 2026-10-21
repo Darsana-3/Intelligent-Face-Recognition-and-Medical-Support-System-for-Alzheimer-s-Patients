@@ -1,0 +1,52 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Notifications - Alzheimer's Support{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+
+{% block sidebar_nav %}
+{% if logged_role == 'admin' %}{% include 'admin_app/_sidebar.html' %}
+{% elif logged_role == 'doctor' %}{% include 'doctor_app/_sidebar.html' %}
+{% else %}{% include 'user_app/_sidebar.html' %}{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h5><i class="bi bi-bell"></i> All Notifications</h5>
+        <div class="card-actions">
+            <a href="{% url 'mark_all_read' %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-check2-all"></i> Mark all read</a>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        {% if notifications %}
+        <div class="list-group list-group-flush">
+            {% for n in notifications %}
+            <div class="list-group-item d-flex align-items-start gap-3 {% if not n.is_read %}bg-light{% endif %}" style="padding:16px 22px;">
+                <div class="feature-icon" style="width:42px;height:42px;flex-shrink:0;font-size:1rem;">
+                    {% if n.notif_type == 'medicine' %}<i class="bi bi-capsule"></i>
+                    {% elif n.notif_type == 'appointment' %}<i class="bi bi-calendar-event"></i>
+                    {% elif n.notif_type == 'approval' %}<i class="bi bi-check2-square"></i>
+                    {% elif n.notif_type == 'alert' %}<i class="bi bi-bell"></i>
+                    {% else %}<i class="bi bi-info-circle"></i>{% endif %}
+                </div>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="mb-1">{{ n.title }} {% if not n.is_read %}<span class="badge bg-primary ms-2">New</span>{% endif %}</h6>
+                        <small class="text-muted">{{ n.created_at|date:"M d, H:i" }}</small>
+                    </div>
+                    <p class="mb-0 text-muted">{{ n.message }}</p>
+                </div>
+                {% if not n.is_read %}
+                <a href="{% url 'mark_notification_read' n.id %}" class="icon-btn"><i class="bi bi-check2"></i></a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-bell-slash"></i>
+            <p>No notifications yet</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

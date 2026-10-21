@@ -1,0 +1,124 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Admin Dashboard - Alzheimer's Support{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+{% block sidebar_nav %}{% include 'admin_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<!-- Stat cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card primary">
+            <div class="stat-icon"><i class="bi bi-clipboard-pulse"></i></div>
+            <div class="stat-value">{{ doctor_count }}</div>
+            <div class="stat-label">Total Doctors</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card secondary">
+            <div class="stat-icon"><i class="bi bi-people"></i></div>
+            <div class="stat-value">{{ patient_count }}</div>
+            <div class="stat-label">Total Patients</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card success">
+            <div class="stat-icon"><i class="bi bi-calendar-check"></i></div>
+            <div class="stat-value">{{ appointment_count }}</div>
+            <div class="stat-label">Appointments</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card info">
+            <div class="stat-icon"><i class="bi bi-camera"></i></div>
+            <div class="stat-value">{{ known_face_count }}</div>
+            <div class="stat-label">Known Faces</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card warning">
+            <div class="stat-icon"><i class="bi bi-capsule"></i></div>
+            <div class="stat-value">{{ medicine_count }}</div>
+            <div class="stat-label">Medicines</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card danger">
+            <div class="stat-icon"><i class="bi bi-eye"></i></div>
+            <div class="stat-value">{{ recognition_log_count }}</div>
+            <div class="stat-label">Recognitions</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card success">
+            <div class="stat-icon"><i class="bi bi-person-check"></i></div>
+            <div class="stat-value">{{ active_doctor_count }}</div>
+            <div class="stat-label">Active Doctors</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card primary">
+            <div class="stat-icon"><i class="bi bi-person-heart"></i></div>
+            <div class="stat-value">{{ active_patient_count }}</div>
+            <div class="stat-label">Active Patients</div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent activity -->
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="content-card">
+            <div class="card-header"><h5><i class="bi bi-clock-history"></i> Recent Activity</h5></div>
+            <div class="card-body p-0">
+                {% if recent_logs %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead><tr><th>User</th><th>Action</th><th>Time</th></tr></thead>
+                        <tbody>
+                            {% for log in recent_logs %}
+                            <tr>
+                                <td><strong>{{ log.user_name }}</strong><br><small class="text-muted">{{ log.user_role }}</small></td>
+                                <td>{{ log.action }}</td>
+                                <td><small>{{ log.created_at|date:"M d, H:i" }}</small></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state"><i class="bi bi-clock"></i><p>No activity yet</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="content-card">
+            <div class="card-header"><h5><i class="bi bi-people"></i> Recent Patients</h5></div>
+            <div class="card-body p-0">
+                {% if recent_patients %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead><tr><th>Name</th><th>Age</th><th>Doctor</th><th></th></tr></thead>
+                        <tbody>
+                            {% for p in recent_patients %}
+                            <tr>
+                                <td><strong>{{ p.name }}</strong></td>
+                                <td>{{ p.age }}</td>
+                                <td>{% if p.assigned_doctor %}Dr. {{ p.assigned_doctor.name }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                                <td><a href="{% url 'view_patient' p.id %}" class="icon-btn"><i class="bi bi-eye"></i></a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state"><i class="bi bi-people"></i><p>No patients yet</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

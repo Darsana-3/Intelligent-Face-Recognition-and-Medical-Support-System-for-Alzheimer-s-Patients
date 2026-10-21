@@ -1,0 +1,70 @@
+{% extends 'base_public.html' %}
+{% block title %}Register - Alzheimer's Support{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card wide">
+        <div class="auth-header">
+            <div class="auth-logo"><i class="bi bi-person-plus"></i></div>
+            <h2>Create Patient Account</h2>
+            <p>Join Alzheimer's Support for intelligent, compassionate care</p>
+        </div>
+        <div class="auth-body">
+            <form method="POST" class="js-validate" data-restrict-email-domain="1" data-check-username="1" data-check-username-role="patient" novalidate>
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-control" name="email" required>
+                        <small class="form-text text-muted">Only Google/Gmail, Yahoo, Outlook/Hotmail email addresses are accepted.</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Username *</label>
+                        <input type="text" class="form-control" name="username" required>
+                        <small class="form-text text-muted">We'll check availability as you type.</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Phone *</label>
+                        <input type="tel" class="form-control" name="phone" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10">
+                        <small class="form-text text-muted">Exactly 10 digits.</small>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Age *</label>
+                        <input type="number" class="form-control" name="age" min="1" max="120" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Gender *</label>
+                        <select class="form-select" name="gender" required>
+                            <option value="">Select</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                            <option value="O">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Address</label>
+                        <input type="text" class="form-control" name="address">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Password *</label>
+                        <input type="password" class="form-control" name="password" required minlength="8">
+                        <small class="form-text text-muted">8+ characters with uppercase, lowercase, number &amp; special character.</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Confirm Password *</label>
+                        <input type="password" class="form-control" name="confirm_password" required minlength="8">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mt-4"><i class="bi bi-check-circle"></i> Register</button>
+            </form>
+        </div>
+        <div class="auth-footer">
+            Already have an account? <a href="{% url 'login' %}">Login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Activity Logs - Alzheimer's Support{% endblock %}
+{% block page_title %}System Activity Logs{% endblock %}
+{% block sidebar_nav %}{% include 'admin_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header"><h5><i class="bi bi-list-ul"></i> Recent Activity (Last 200)</h5></div>
+    <div class="card-body p-0">
+        {% if logs %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead><tr><th>User</th><th>Role</th><th>Action</th><th>IP</th><th>Time</th></tr></thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td><strong>{{ log.user_name }}</strong></td>
+                        <td><span class="status-badge active">{{ log.user_role }}</span></td>
+                        <td>{{ log.action }}</td>
+                        <td><small class="text-muted">{{ log.ip_address|default:"—" }}</small></td>
+                        <td><small>{{ log.created_at|date:"M d, Y H:i" }}</small></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state"><i class="bi bi-clock-history"></i><p>No activity yet</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

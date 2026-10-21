@@ -1,0 +1,35 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}My Patients - Alzheimer's Support{% endblock %}
+{% block page_title %}My Patients{% endblock %}
+{% block sidebar_nav %}{% include 'doctor_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h5><i class="bi bi-people"></i> Patients Assigned to Me</h5>
+        <div class="card-actions"><form method="GET"><input type="text" class="form-control form-control-sm" name="q" value="{{ q }}" placeholder="Search..."></form></div>
+    </div>
+    <div class="card-body p-0">
+        {% if patients %}
+        <table class="table">
+            <thead><tr><th>Patient</th><th>Age/Gender</th><th>Stage</th><th>Phone</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for p in patients %}
+                <tr>
+                    <td><strong>{{ p.name }}</strong><br><small class="text-muted">{{ p.email }}</small></td>
+                    <td>{{ p.age }} / {{ p.get_gender_display }}</td>
+                    <td><span class="status-badge {% if p.alzheimer_stage == 'late' %}inactive{% elif p.alzheimer_stage == 'middle' %}pending{% else %}active{% endif %}">{{ p.get_alzheimer_stage_display }}</span></td>
+                    <td>{{ p.phone }}</td>
+                    <td>
+                        <a href="{% url 'view_patient_doctor' p.id %}" class="icon-btn" title="View"><i class="bi bi-eye"></i></a>
+                        <a href="{% url 'doctor_chat' p.id %}" class="icon-btn" title="Chat"><i class="bi bi-chat-dots"></i></a>
+                        <a href="{% url 'remove_patient' p.id %}" class="icon-btn danger confirm-delete" title="Remove"><i class="bi bi-person-dash"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}<div class="empty-state"><i class="bi bi-people"></i><p>No patients assigned yet. Patients will appear here once you approve their appointment requests.</p></div>{% endif %}
+    </div>
+</div>
+{% endblock %}

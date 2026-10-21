@@ -1,0 +1,29 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}My Prescriptions - Alzheimer's Support{% endblock %}
+{% block page_title %}My Prescriptions{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header"><h5><i class="bi bi-clipboard2-pulse"></i> Prescriptions</h5></div>
+    <div class="card-body">
+        {% if prescriptions %}
+        {% for p in prescriptions %}
+        <div class="content-card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-file-medical"></i> {{ p.diagnosis }}</h6>
+                <small class="text-muted ms-auto">Dr. {{ p.doctor.name }} — {{ p.created_at|date:"M d, Y" }}</small>
+            </div>
+            <div class="card-body p-0">
+                {% if p.notes %}<div class="p-3 border-bottom"><strong>Notes:</strong> {{ p.notes }}</div>{% endif %}
+                <table class="table mb-0">
+                    <thead><tr><th>Medicine</th><th>Dosage</th><th>Frequency</th><th>Time</th><th>Duration</th></tr></thead>
+                    <tbody>{% for m in p.medicines.all %}<tr><td>{{ m.name }}</td><td>{{ m.dosage }}</td><td>{{ m.get_frequency_display }}</td><td>{% for t in m.timings.all %}{{ t.time|time:"h:i A" }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</td><td>{{ m.duration_days }}d</td></tr>{% endfor %}</tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}<div class="empty-state"><i class="bi bi-clipboard2-x"></i><p>No prescriptions yet</p></div>{% endif %}
+    </div>
+</div>
+{% endblock %}

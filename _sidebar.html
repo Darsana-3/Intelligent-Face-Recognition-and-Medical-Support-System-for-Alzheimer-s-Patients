@@ -1,0 +1,27 @@
+<div class="nav-section">Main</div>
+<a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+    <i class="bi bi-speedometer2"></i> Dashboard
+</a>
+
+<div class="nav-section">Management</div>
+<a href="{% url 'doctors_list' %}" class="{% if 'doctor' in request.resolver_match.url_name %}active{% endif %}">
+    <i class="bi bi-clipboard-pulse"></i> Doctors
+</a>
+<a href="{% url 'patients_list' %}" class="{% if 'patient' in request.resolver_match.url_name %}active{% endif %}">
+    <i class="bi bi-people"></i> Patients
+</a>
+
+<div class="nav-section">System</div>
+<a href="{% url 'activity_logs' %}" class="{% if request.resolver_match.url_name == 'activity_logs' %}active{% endif %}">
+    <i class="bi bi-list-ul"></i> Activity Logs
+</a>
+<a href="{% url 'notifications_list' %}" class="{% if request.resolver_match.url_name == 'notifications_list' %}active{% endif %}">
+    <i class="bi bi-bell"></i> Notifications
+    {% if unread_notifications_count %}<span class="badge">{{ unread_notifications_count }}</span>{% endif %}
+</a>
+<a href="{% url 'admin_profile' %}" class="{% if request.resolver_match.url_name == 'admin_profile' %}active{% endif %}">
+    <i class="bi bi-person"></i> Profile
+</a>
+<a href="{% url 'logout' %}">
+    <i class="bi bi-box-arrow-right"></i> Logout
+</a>

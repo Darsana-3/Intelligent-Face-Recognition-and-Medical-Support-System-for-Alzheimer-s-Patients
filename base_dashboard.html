@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard - Alzheimer's Support{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-brand">
+                <i class="bi bi-heart-pulse-fill"></i>
+                <span>Alzheimer's Support</span>
+                <span class="sidebar-role">{{ logged_role }}</span>
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            {% block sidebar_nav %}{% endblock %}
+        </nav>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <button class="btn d-lg-none" id="sidebarToggle"><i class="bi bi-list fs-4"></i></button>
+            <h1 class="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+            <div class="topbar-actions">
+                <a href="{% url 'notifications_list' %}" class="topbar-icon-btn" title="Notifications">
+                    <i class="bi bi-bell"></i>
+                    {% if unread_notifications_count %}
+                        <span class="notif-badge">{{ unread_notifications_count }}</span>
+                    {% endif %}
+                </a>
+                <div class="dropdown">
+                    <div class="user-menu" data-bs-toggle="dropdown">
+                        {% if logged_user.profile_pic %}
+                            <img src="{{ logged_user.profile_pic.url }}" alt="">
+                        {% else %}
+                            <span class="avatar-placeholder">{{ logged_user.name|slice:":1" }}</span>
+                        {% endif %}
+                        <span class="user-name d-none d-md-inline">{{ logged_user.name }}</span>
+                        <i class="bi bi-chevron-down d-none d-md-inline" style="font-size:.8rem;color:var(--gray-400);"></i>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        {% if logged_role == 'admin' %}
+                            <li><a class="dropdown-item" href="{% url 'admin_profile' %}"><i class="bi bi-person"></i> Profile</a></li>
+                        {% elif logged_role == 'doctor' %}
+                            <li><a class="dropdown-item" href="{% url 'doctor_profile' %}"><i class="bi bi-person"></i> Profile</a></li>
+                        {% elif logged_role == 'patient' %}
+                            <li><a class="dropdown-item" href="{% url 'patient_profile' %}"><i class="bi bi-person"></i> Profile</a></li>
+                        {% endif %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- MESSAGES -->
+        {% if messages %}
+        <div class="px-4 pt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    <i class="bi bi-info-circle-fill"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- CONTENT -->
+        <div class="content-area">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+<script src="{% static 'js/validation.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

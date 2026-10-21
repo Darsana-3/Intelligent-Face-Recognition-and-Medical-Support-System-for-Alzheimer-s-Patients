@@ -1,0 +1,42 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Find a Doctor - Alzheimer's Support{% endblock %}
+{% block page_title %}Find a Doctor{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h5><i class="bi bi-search-heart"></i> Search Doctors</h5>
+        <div class="card-actions">
+            <form method="GET" class="d-flex gap-2">
+                <input type="text" class="form-control form-control-sm" name="q" value="{{ q }}" placeholder="Search by name or qualification...">
+                <select name="specialization" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">All Specializations</option>
+                    {% for v, label in specializations %}
+                    <option value="{{ v }}" {% if specialization == v %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary btn-sm">Search</button>
+            </form>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        {% if doctors %}
+        <table class="table">
+            <thead><tr><th>Doctor</th><th>Specialization</th><th>Qualification</th><th>Experience</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for d in doctors %}
+                <tr>
+                    <td><strong>Dr. {{ d.name }}</strong><br><small class="text-muted">{{ d.email }}</small></td>
+                    <td>{{ d.get_specialization_display }}</td>
+                    <td>{{ d.qualification }}</td>
+                    <td>{{ d.experience_years }} yrs</td>
+                    <td><a href="{% url 'book_appointment' d.id %}" class="btn btn-sm btn-primary"><i class="bi bi-calendar-plus"></i> Book Appointment</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}<div class="empty-state"><i class="bi bi-person-x"></i><p>No doctors found.</p></div>{% endif %}
+    </div>
+</div>
+{% endblock %}

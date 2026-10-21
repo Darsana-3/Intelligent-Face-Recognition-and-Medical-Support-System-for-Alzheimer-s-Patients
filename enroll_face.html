@@ -1,0 +1,30 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Enroll Face - Alzheimer's Support{% endblock %}
+{% block page_title %}Enroll New Face{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width:800px;">
+    <div class="card-header"><h5><i class="bi bi-person-plus-fill"></i> Add Person for Recognition</h5></div>
+    <div class="card-body">
+        <div class="alert alert-info"><i class="bi bi-info-circle"></i> <strong>Tip:</strong> Upload 1 primary photo and 2-4 additional photos for best accuracy. Use clear, front-facing photos with good lighting.</div>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-md-6"><label class="form-label">Person's Name *</label><input type="text" class="form-control" name="person_name" required placeholder="e.g., Priya"></div>
+                <div class="col-md-6"><label class="form-label">Relationship *</label><input type="text" class="form-control" name="relationship" required placeholder="e.g., Daughter, Son, Caregiver"></div>
+                <div class="col-12"><label class="form-label">Primary Photo *</label><input type="file" class="form-control" name="primary_image" accept="image/*" required></div>
+                <div class="col-12"><label class="form-label">Additional Photos (recommended)</label><input type="file" class="form-control" name="extra_images" accept="image/*" multiple><small class="text-muted">Hold Ctrl/Cmd to select multiple files</small></div>
+                <div class="col-12"><label class="form-label">Notes</label><textarea class="form-control" name="notes" rows="2" placeholder="Optional notes about this person..."></textarea></div>
+            </div>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-cpu"></i> Extract Embeddings & Enroll</button>
+                <a href="{% url 'known_faces_list' %}" class="btn btn-outline-primary">Cancel</a>
+            </div>
+            <div class="mt-3 p-3" style="background:var(--gray-50);border-radius:10px;font-size:0.85rem;color:var(--gray-600);">
+                <strong><i class="bi bi-shield-check"></i> Privacy:</strong> Photos are processed using DeepFace + VGG-Face to generate 512-dimensional embeddings. The embeddings are stored locally and never shared.
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

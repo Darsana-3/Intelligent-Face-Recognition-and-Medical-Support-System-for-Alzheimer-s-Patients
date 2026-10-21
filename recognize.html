@@ -1,0 +1,157 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Recognize Visitor - Alzheimer's Support{% endblock %}
+{% block page_title %}Recognize Visitor{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="content-card">
+            <div class="card-header"><h5><i class="bi bi-camera-video"></i> Camera Stage</h5></div>
+            <div class="card-body">
+                <div class="recognition-stage">
+                    <video id="webcam" class="recognition-video" autoplay playsinline></video>
+                    <canvas id="snapshot" style="display:none;"></canvas>
+                    <div class="mt-3 d-flex gap-2 justify-content-center">
+                        <button class="btn btn-primary btn-lg" id="captureBtn"><i class="bi bi-camera-fill"></i> Capture & Identify</button>
+                        <button class="btn btn-outline-light btn-lg" id="startCamBtn"><i class="bi bi-power"></i> Start Camera</button>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3"><i class="bi bi-info-circle"></i> Position the visitor's face clearly in the frame, then click <strong>Capture & Identify</strong>.</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="content-card">
+            <div class="card-header"><h5><i class="bi bi-person-check"></i> Recognition Result</h5></div>
+            <div class="card-body">
+                <div id="resultArea">
+                    <div class="empty-state">
+                        <i class="bi bi-camera"></i>
+                        <p>Capture a face to see results here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content-card">
+            <div class="card-body">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="voiceEnabled" {% if patient.voice_announcement_enabled %}checked{% endif %}>
+                    <label class="form-check-label" for="voiceEnabled"><i class="bi bi-megaphone"></i> Voice announcement</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let videoStream = null;
+const video = document.getElementById('webcam');
+const canvas = document.getElementById('snapshot');
+const captureBtn = document.getElementById('captureBtn');
+const startCamBtn = document.getElementById('startCamBtn');
+const resultArea = document.getElementById('resultArea');
+
+// Start camera
+function startCamera() {
+    navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } })
+        .then(stream => {
+            videoStream = stream;
+            video.srcObject = stream;
+            startCamBtn.innerHTML = '<i class="bi bi-power"></i> Stop Camera';
+        })
+        .catch(err => {
+            alert('Cannot access camera: ' + err.message);
+        });
+}
+
+function stopCamera() {
+    if (videoStream) {
+        videoStream.getTracks().forEach(t => t.stop());
+        videoStream = null;
+        video.srcObject = null;
+        startCamBtn.innerHTML = '<i class="bi bi-power"></i> Start Camera';
+    }
+}
+
+startCamBtn.addEventListener('click', () => {
+    if (videoStream) stopCamera();
+    else startCamera();
+});
+
+// Voice announcement
+function speak(text) {
+    const enabled = document.getElementById('voiceEnabled').checked;
+    if (!enabled) return;
+    if (!('speechSynthesis' in window)) return;
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'en-US';
+    utter.rate = 0.92;
+    utter.pitch = 1;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+}
+
+// Capture and send
+captureBtn.addEventListener('click', () => {
+    if (!videoStream) {
+        alert('Please start the camera first.');
+        return;
+    }
+    captureBtn.disabled = true;
+    captureBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Analyzing...';
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    const dataURL = canvas.toDataURL('image/jpeg', 0.85);
+
+    $.ajax({
+        url: '{% url "recognize_api" %}',
+        type: 'POST',
+        data: {
+            image_data: dataURL,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+        },
+        success: function(resp) {
+            renderResult(resp);
+            captureBtn.disabled = false;
+            captureBtn.innerHTML = '<i class="bi bi-camera-fill"></i> Capture & Identify';
+        },
+        error: function(xhr) {
+            resultArea.innerHTML = '<div class="alert alert-danger"><i class="bi bi-x-circle"></i> Error: ' + (xhr.responseJSON?.error || 'Unknown error') + '</div>';
+            captureBtn.disabled = false;
+            captureBtn.innerHTML = '<i class="bi bi-camera-fill"></i> Capture & Identify';
+        }
+    });
+});
+
+function renderResult(resp) {
+    if (resp.match) {
+        resultArea.innerHTML = `
+            <div class="recognition-result match">
+                <img src="${resp.primary_image}" style="width:50%" alt="no image">
+                <div class="person-name">${resp.person_name}</div>
+                <div class="person-relationship">Your ${resp.relationship}</div>
+                <div class="confidence">Confidence: ${resp.confidence}% &nbsp;|&nbsp; Distance: ${resp.distance}</div>
+            </div>`;
+        speak(`This is your ${resp.relationship}, ${resp.person_name}.`);
+    } else {
+        resultArea.innerHTML = `
+            <div class="recognition-result no-match">
+                <i class="bi bi-question-circle-fill" style="font-size:3rem;color:var(--danger);"></i>
+                <div class="person-name">${resp.person_name}</div>
+                <div class="text-muted">No match found</div>
+                <div class="confidence">Distance: ${resp.distance}</div>
+            </div>`;
+        speak("Unknown visitor. This person is not in your contacts.");
+    }
+}
+
+// Auto-start camera on page load
+window.addEventListener('load', startCamera);
+window.addEventListener('beforeunload', stopCamera);
+</script>
+{% endblock %}

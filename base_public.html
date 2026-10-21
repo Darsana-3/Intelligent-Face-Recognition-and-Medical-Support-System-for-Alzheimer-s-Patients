@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Alzheimer's Support - Intelligent Care System{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- ===== PUBLIC NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg public-navbar">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'landing' %}">
+            <i class="bi bi-heart-pulse-fill"></i>
+            Alzheimer's Support
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'landing' %}active{% endif %}" href="{% url 'landing' %}">Home</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'features' %}active{% endif %}" href="{% url 'features' %}">Features</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">About</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Contact</a></li>
+                {% if logged_role %}
+                    {% if logged_role == 'admin' %}
+                        <li class="nav-item"><a class="nav-link btn-login" href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+                    {% elif logged_role == 'doctor' %}
+                        <li class="nav-item"><a class="nav-link btn-login" href="{% url 'doctor_dashboard' %}">Dashboard</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link btn-login" href="{% url 'user_dashboard' %}">Dashboard</a></li>
+                    {% endif %}
+                {% else %}
+                    <li class="nav-item"><a class="nav-link btn-login" href="{% url 'login' %}">Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== MESSAGES ===== -->
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+            <i class="bi bi-info-circle-fill"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+<!-- ===== PUBLIC FOOTER ===== -->
+<footer class="public-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <h5><i class="bi bi-heart-pulse-fill"></i> Alzheimer's Support</h5>
+                <p>An AI-powered care system designed to support Alzheimer's patients through intelligent face recognition and structured medical reminders.</p>
+            </div>
+            <div class="col-md-2 mb-4">
+                <h5>Product</h5>
+                <a href="{% url 'features' %}">Features</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'contact' %}">Contact</a>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h5>For Users</h5>
+                <a href="{% url 'login' %}">Patient Login</a>
+                <a href="{% url 'login' %}">Doctor Login</a>
+                <a href="{% url 'patient_register' %}">Register</a>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h5>Contact</h5>
+                <a href="#"><i class="bi bi-envelope"></i> support@alzheimerssupport.app</a>
+                <a href="#"><i class="bi bi-telephone"></i> +91 98765 43210</a>
+                <a href="#"><i class="bi bi-geo-alt"></i> Thiruvananthapuram, India</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; {% now "Y" %} Alzheimer's Support. All rights reserved. Built with care for cognitive wellness.
+        </div>
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+<script src="{% static 'js/validation.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

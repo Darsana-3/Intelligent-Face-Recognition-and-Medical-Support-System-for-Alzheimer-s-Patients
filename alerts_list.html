@@ -1,0 +1,171 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Alerts - Alzheimer's Support{% endblock %}
+{% block page_title %}My Alerts{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h5><i class="bi bi-bell"></i> Alerts & Reminders</h5>
+        <div class="card-actions"><a href="{% url 'add_alert' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Alert</a></div>
+    </div>
+    <div class="card-body p-0">
+        {% if alerts %}
+        <table class="table">
+            <thead><tr><th>Title</th><th>Type</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for a in alerts %}
+                <tr
+                    data-id="{{ a.id }}"
+                    data-title="{{ a.title }}"
+                    data-description="{{ a.description }}"
+                    data-date="{{ a.alert_date|date:'Y-m-d' }}"
+                    data-time="{{ a.alert_time|time:'H:i' }}"
+                >
+                    <td><strong>{{ a.title }}</strong>{% if a.description %}<br><small class="text-muted">{{ a.description|truncatechars:50 }}</small>{% endif %}</td>
+                    <td><span class="status-badge active">{{ a.get_alert_type_display }}</span></td>
+                    <td>{{ a.alert_date }}</td>
+                    <td>{{ a.alert_time }}</td>
+                    <td>{% if a.is_dismissed %}<span class="status-badge inactive">Dismissed</span>{% elif a.is_active %}<span class="status-badge active">Active</span>{% else %}<span class="status-badge inactive">Inactive</span>{% endif %}</td>
+                    <td>
+                        {% if not a.is_dismissed %}<a href="{% url 'dismiss_alert' a.id %}" class="icon-btn" title="Dismiss"><i class="bi bi-check2"></i></a>{% endif %}
+                        <a href="{% url 'delete_alert' a.id %}" class="icon-btn danger confirm-delete"><i class="bi bi-trash"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}<div class="empty-state"><i class="bi bi-bell-slash"></i><p>No alerts yet</p><a href="{% url 'add_alert' %}" class="btn btn-primary">Add First Alert</a></div>{% endif %}
+    </div>
+</div>
+
+<!-- Alert Modal -->
+<div class="modal fade" id="alertModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    🔔 Reminder
+                </h5>
+            </div>
+
+            <div class="modal-body">
+                <h4 id="alertTitle"></h4>
+                <p id="alertDescription"></p>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-success" id="dismissBtn">
+                    Dismiss
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+const triggeredAlerts = new Set();
+
+let speakingInterval = null;
+let currentUtterance = null;
+
+function speakAlert(title) {
+
+    function speakOnce() {
+
+        if (speechSynthesis.speaking) {
+            speechSynthesis.cancel();
+        }
+
+        currentUtterance = new SpeechSynthesisUtterance(
+            "Reminder. " + title
+        );
+
+        currentUtterance.rate = 0.9;
+        currentUtterance.pitch = 1;
+        currentUtterance.volume = 1;
+
+        speechSynthesis.speak(currentUtterance);
+    }
+
+    speakOnce();
+
+    speakingInterval = setInterval(speakOnce, 5000);
+
+    setTimeout(() => {
+        clearInterval(speakingInterval);
+        speechSynthesis.cancel();
+    }, 60000); // 1 minute
+}
+
+function stopSpeaking() {
+
+    clearInterval(speakingInterval);
+
+    speechSynthesis.cancel();
+}
+
+function showPopup(title, description) {
+
+    document.getElementById("alertTitle").innerText = title;
+    document.getElementById("alertDescription").innerText = description;
+
+    const modal = new bootstrap.Modal(
+        document.getElementById("alertModal")
+    );
+
+    modal.show();
+
+    document.getElementById("dismissBtn").onclick = function() {
+
+        stopSpeaking();
+
+        modal.hide();
+    };
+}
+
+function checkAlerts() {
+
+    const now = new Date();
+
+    const today =
+        now.getFullYear() + "-" +
+        String(now.getMonth()+1).padStart(2,'0') + "-" +
+        String(now.getDate()).padStart(2,'0');
+
+    const currentTime =
+        String(now.getHours()).padStart(2,'0') + ":" +
+        String(now.getMinutes()).padStart(2,'0');
+
+    document.querySelectorAll("tbody tr").forEach(row => {
+
+        const id = row.dataset.id;
+        const title = row.dataset.title;
+        const description = row.dataset.description;
+        const date = row.dataset.date;
+        const time = row.dataset.time;
+
+        if (
+            today === date &&
+            currentTime === time &&
+            !triggeredAlerts.has(id)
+        ) {
+
+            triggeredAlerts.add(id);
+
+            showPopup(title, description);
+
+            speakAlert(title);
+        }
+
+    });
+
+}
+
+checkAlerts();
+
+setInterval(checkAlerts, 1000);
+</script>
+{% endblock %}

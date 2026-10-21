@@ -1,0 +1,37 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Emergency Contacts - Alzheimer's Support{% endblock %}
+{% block page_title %}Emergency Contacts{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h5><i class="bi bi-telephone-plus"></i> Next of Kin & Emergency Contacts</h5>
+        <div class="card-actions"><a href="{% url 'add_contact' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Contact</a></div>
+    </div>
+    <div class="card-body">
+        {% if contacts %}
+        <div class="row g-3">
+            {% for c in contacts %}
+            <div class="col-md-6 col-lg-4">
+                <div class="content-card mb-0" style="border:{% if c.is_primary %}2px solid var(--primary){% else %}1px solid var(--gray-100){% endif %};">
+                    <div class="card-body">
+                        {% if c.is_primary %}<span class="status-badge active mb-2"><i class="bi bi-star-fill"></i> Primary</span>{% endif %}
+                        <h5>{{ c.name }}</h5>
+                        <p class="text-muted mb-2">{{ c.relationship }}</p>
+                        <p class="mb-2"><i class="bi bi-telephone"></i> <a href="tel:{{ c.phone }}">{{ c.phone }}</a></p>
+                        {% if c.email %}<p class="mb-2"><i class="bi bi-envelope"></i> {{ c.email }}</p>{% endif %}
+                        <div class="mt-3">
+                            <a href="tel:{{ c.phone }}" class="btn btn-success btn-sm"><i class="bi bi-telephone"></i> Call</a>
+                            <a href="{% url 'edit_contact' c.id %}" class="icon-btn"><i class="bi bi-pencil"></i></a>
+                            <a href="{% url 'delete_contact' c.id %}" class="icon-btn danger confirm-delete"><i class="bi bi-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}<div class="empty-state"><i class="bi bi-telephone-x"></i><p>No emergency contacts</p><a href="{% url 'add_contact' %}" class="btn btn-primary">Add First Contact</a></div>{% endif %}
+    </div>
+</div>
+{% endblock %}

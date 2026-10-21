@@ -1,0 +1,36 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Medicines - Alzheimer's Support{% endblock %}
+{% block page_title %}My Medicines{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h5><i class="bi bi-capsule"></i> Medicines</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if medicines %}
+        <table class="table">
+            <thead><tr><th>Medicine</th><th>Dosage</th><th>Frequency</th><th>Time</th><th>By Doctor</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for m in medicines %}
+                <tr>
+                    <td><strong>{{ m.name }}</strong>{% if m.instructions %}<br><small class="text-muted">{{ m.instructions|truncatechars:40 }}</small>{% endif %}</td>
+                    <td>{{ m.dosage }}</td>
+                    <td>{{ m.get_frequency_display }}</td>
+                    <td>{% for t in m.timings.all %}<span class="status-badge active">{{ t.time|time:"h:i A" }}</span> {% empty %}<span class="text-muted">—</span>{% endfor %}</td>
+                    <td>{% if m.prescribed_by_doctor %}<i class="bi bi-check-circle-fill text-success"></i>{% else %}<span class="text-muted">Self</span>{% endif %}</td>
+                    <td><span class="status-badge {% if m.is_active %}active{% else %}inactive{% endif %}">{% if m.is_active %}Active{% else %}Paused{% endif %}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary mark-taken-btn" data-url="{% url 'mark_medicine_taken' m.id %}" title="Mark taken"><i class="bi bi-check2"></i></button>
+                        <a href="{% url 'toggle_medicine' m.id %}" class="icon-btn"><i class="bi bi-power"></i></a>
+                        {% if not m.prescribed_by_doctor %}<a href="{% url 'delete_medicine' m.id %}" class="icon-btn danger confirm-delete"><i class="bi bi-trash"></i></a>{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}<div class="empty-state"><i class="bi bi-capsule"></i><p>No medicines yet. Your doctor will add prescriptions here.</p></div>{% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Book Appointment - Alzheimer's Support{% endblock %}
+{% block page_title %}Book Appointment with Dr. {{ doctor.name }}{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="content-card">
+            <div class="card-header"><h5><i class="bi bi-calendar-week"></i> Available Slots</h5></div>
+            <div class="card-body p-0">
+                {% if slots %}
+                <table class="table mb-0">
+                    <thead><tr><th>Day</th><th>Hours</th><th>Capacity</th></tr></thead>
+                    <tbody>
+                        {% for s in slots %}
+                        <tr>
+                            <td>{{ s.get_day_of_week_display }}</td>
+                            <td>{{ s.start_time|time:"h:i A" }} - {{ s.end_time|time:"h:i A" }}</td>
+                            <td>{% if s.max_patients == 1 %}1 patient (first come, first served){% else %}up to {{ s.max_patients }} patients{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}<div class="empty-state"><p>This doctor hasn't added any availability slots yet.</p></div>{% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="content-card">
+            <div class="card-header"><h5><i class="bi bi-calendar-plus"></i> Request an Appointment</h5></div>
+            <div class="card-body">
+                {% if slots %}
+                <form method="POST" id="bookForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="slot_id" id="slotIdInput">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Choose a Slot *</label>
+                            <select class="form-select" id="slotSelect" required>
+                                <option value="">Select a day &amp; time slot</option>
+                                {% for s in slots %}
+                                <option value="{{ s.id }}"
+                                        data-day="{{ s.day_of_week }}"
+                                        data-start="{{ s.start_time|time:'H:i' }}"
+                                        data-end="{{ s.end_time|time:'H:i' }}">
+                                    {{ s.get_day_of_week_display }} — {{ s.start_time|time:"h:i A" }} to {{ s.end_time|time:"h:i A" }} ({% if s.max_patients == 1 %}1 patient{% else %}up to {{ s.max_patients }} patients{% endif %})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Date *</label>
+                            <input type="date" class="form-control" name="appointment_date" id="appointmentDate" required disabled>
+                            <small class="form-text text-muted" id="dateHint">Pick a slot first.</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Time *</label>
+                            <input type="time" class="form-control" name="appointment_time" id="appointmentTime" required disabled>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Reason / Purpose</label>
+                            <textarea class="form-control" name="reason" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="alert alert-info mt-3 mb-0">
+                        <i class="bi bi-info-circle"></i> Your request will be sent to the doctor for approval, and you can only hold one appointment per day.
+                    </div>
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i> Request Appointment</button>
+                        <a href="{% url 'find_doctors' %}" class="btn btn-outline-primary">Back</a>
+                    </div>
+                </form>
+                {% else %}
+                <a href="{% url 'find_doctors' %}" class="btn btn-outline-primary">Back to Find a Doctor</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    var DAY_NUMBERS = {sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6};
+    var slotSelect = document.getElementById('slotSelect');
+    var slotIdInput = document.getElementById('slotIdInput');
+    var dateInput = document.getElementById('appointmentDate');
+    var timeInput = document.getElementById('appointmentTime');
+    var dateHint = document.getElementById('dateHint');
+
+    function nextDateForDay(dayCode) {
+        var target = DAY_NUMBERS[dayCode];
+        var d = new Date();
+        d.setDate(d.getDate() + 1); // don't default to today
+        while (d.getDay() !== target) {
+            d.setDate(d.getDate() + 1);
+        }
+        var yyyy = d.getFullYear();
+        var mm = String(d.getMonth() + 1).padStart(2, '0');
+        var dd = String(d.getDate()).padStart(2, '0');
+        return yyyy + '-' + mm + '-' + dd;
+    }
+
+    slotSelect.addEventListener('change', function() {
+        var opt = slotSelect.options[slotSelect.selectedIndex];
+        if (!opt.value) {
+            dateInput.disabled = true;
+            timeInput.disabled = true;
+            dateHint.textContent = 'Pick a slot first.';
+            return;
+        }
+        var day = opt.getAttribute('data-day');
+        var start = opt.getAttribute('data-start');
+        var end = opt.getAttribute('data-end');
+
+        slotIdInput.value = opt.value;
+        dateInput.disabled = false;
+        timeInput.disabled = false;
+        timeInput.min = start;
+        timeInput.max = end;
+        timeInput.value = start;
+        dateInput.value = nextDateForDay(day);
+        dateHint.textContent = 'Must fall on a ' + opt.text.split(' —')[0] + '. Time must be between ' + start + ' and ' + end + '.';
+    });
+
+    // Keep the date locked to the correct weekday if the user edits it manually.
+    dateInput.addEventListener('change', function() {
+        var opt = slotSelect.options[slotSelect.selectedIndex];
+        if (!opt.value) return;
+        var day = opt.getAttribute('data-day');
+        var chosen = new Date(dateInput.value + 'T00:00:00');
+        if (chosen.getDay() !== DAY_NUMBERS[day]) {
+            if (window.showToast) {
+                window.showToast('Please pick a date that falls on ' + opt.text.split(' —')[0] + '.', 'danger');
+            }
+            dateInput.value = nextDateForDay(day);
+        }
+    });
+})();
+</script>
+{% endblock %}

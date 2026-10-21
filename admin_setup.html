@@ -1,0 +1,52 @@
+{% extends 'base_public.html' %}
+{% block title %}Admin Setup - Alzheimer's Support{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card wide">
+        <div class="auth-header">
+            <div class="auth-logo"><i class="bi bi-shield-lock"></i></div>
+            <h2>One-Time Admin Setup</h2>
+            <p>Create the primary administrator account for the system</p>
+        </div>
+        <div class="auth-body">
+            <div class="alert alert-info"><i class="bi bi-info-circle"></i> This page can only be used once. After creation, login with these credentials.</div>
+            <form method="POST" class="js-validate" novalidate>
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Username *</label>
+                        <input type="text" class="form-control" name="username" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" class="form-control" name="phone" inputmode="numeric" pattern="[0-9]{10}" maxlength="10">
+                        <small class="form-text text-muted">Exactly 10 digits.</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Password *</label>
+                        <input type="password" class="form-control" name="password" required minlength="8">
+                        <small class="form-text text-muted">8+ characters with uppercase, lowercase, number &amp; special character.</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Confirm Password *</label>
+                        <input type="password" class="form-control" name="confirm_password" required minlength="8">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mt-4"><i class="bi bi-shield-check"></i> Create Admin Account</button>
+            </form>
+        </div>
+        <div class="auth-footer">
+            Already have an account? <a href="{% url 'login' %}">Login here</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

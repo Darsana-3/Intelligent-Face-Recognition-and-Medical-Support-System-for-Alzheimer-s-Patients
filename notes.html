@@ -1,0 +1,20 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Doctor's Notes - Alzheimer's Support{% endblock %}
+{% block page_title %}Doctor's Notes{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header"><h5><i class="bi bi-journal-text"></i> Consultation Notes</h5></div>
+    <div class="card-body">
+        {% if notes %}
+        {% for n in notes %}
+        <div class="mb-3 p-3" style="background:var(--gray-50);border-radius:10px;">
+            <strong>{{ n.title }}</strong> <small class="text-muted">— Dr. {{ n.doctor.name }}, {{ n.created_at|date:"M d, Y" }}</small>
+            <p class="mb-0 mt-1">{{ n.content }}</p>
+        </div>
+        {% endfor %}
+        {% else %}<div class="empty-state"><i class="bi bi-journal"></i><p>No notes from your doctor yet.</p></div>{% endif %}
+    </div>
+</div>
+{% endblock %}

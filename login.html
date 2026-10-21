@@ -1,0 +1,54 @@
+{% extends 'base_public.html' %}
+{% block title %}Login - Alzheimer's Support{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo"><i class="bi bi-box-arrow-in-right"></i></div>
+            <h2>Welcome Back</h2>
+            <p>Sign in to your Alzheimer's Support account</p>
+        </div>
+        <div class="auth-body">
+            {% if not admin_exists %}
+            <div class="alert alert-warning"><i class="bi bi-exclamation-triangle"></i> No admin account exists. <a href="{% url 'admin_setup' %}" class="alert-link">Run setup first</a>.</div>
+            {% endif %}
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Login as</label>
+                    <div class="role-selector">
+                        <input type="radio" name="role" id="role-admin" value="admin">
+                        <label for="role-admin" data-role="admin"><i class="bi bi-shield-fill"></i>Admin</label>
+                        <input type="radio" name="role" id="role-doctor" value="doctor">
+                        <label for="role-doctor" data-role="doctor"><i class="bi bi-clipboard-pulse"></i>Doctor</label>
+                        <input type="radio" name="role" id="role-patient" value="patient" checked>
+                        <label for="role-patient" data-role="patient" class="active"><i class="bi bi-person-heart"></i>Patient</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control" name="username" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" class="form-control" name="password" required>
+                    </div>
+                    <div class="text-end mt-1">
+                        <a href="{% url 'forgot_password' %}" class="small">Forgot password?</a>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mt-2"><i class="bi bi-box-arrow-in-right"></i> Sign In</button>
+            </form>
+        </div>
+        <div class="auth-footer">
+            New patient? <a href="{% url 'patient_register' %}">Create an account</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

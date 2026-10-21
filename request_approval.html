@@ -1,0 +1,26 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Request to Doctor - Alzheimer's Support{% endblock %}
+{% block page_title %}Request Approval{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width:700px;">
+    <div class="card-header"><h5><i class="bi bi-send"></i> Send Request to Your Doctor</h5></div>
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3"><label class="form-label">Request Type</label>
+                <select class="form-select" name="request_type">
+                    <option value="Medicine Refill">Medicine Refill</option>
+                    <option value="Dosage Change">Dosage Change</option>
+                    <option value="New Medicine">New Medicine Request</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="mb-3"><label class="form-label">Description *</label><textarea class="form-control" name="description" rows="5" required placeholder="Please describe your request..."></textarea></div>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i> Send Request</button>
+            <a href="{% url 'user_dashboard' %}" class="btn btn-outline-primary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

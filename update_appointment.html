@@ -1,0 +1,49 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Update Appointment - Alzheimer's Support{% endblock %}
+{% block page_title %}Update Appointment{% endblock %}
+{% block sidebar_nav %}{% include 'doctor_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width:700px;">
+    <div class="card-header"><h5><i class="bi bi-calendar-check"></i> Manage Appointment</h5></div>
+    <div class="card-body">
+        <div class="alert alert-info">
+            <strong>{{ appt.patient.name }}</strong><br>
+            {{ appt.appointment_date }} at {{ appt.appointment_time }}<br>
+            Status: <span class="status-badge {{ appt.status }}">{{ appt.get_status_display }}</span>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="complete">
+                    <label class="form-label">Completion Notes</label>
+                    <textarea class="form-control mb-2" name="notes" rows="2"></textarea>
+                    <button type="submit" class="btn btn-success w-100"><i class="bi bi-check2-all"></i> Mark Completed</button>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="reschedule">
+                    <label class="form-label">Reschedule</label>
+                    <input type="date" class="form-control mb-1" name="appointment_date" value="{{ appt.appointment_date|date:'Y-m-d' }}">
+                    <input type="time" class="form-control mb-2" name="appointment_time" value="{{ appt.appointment_time|time:'H:i' }}">
+                    <button type="submit" class="btn btn-warning w-100"><i class="bi bi-arrow-repeat"></i> Reschedule</button>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <form method="POST" class="h-100 d-flex flex-column">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="cancel">
+                    <label class="form-label">Cancel Appointment</label>
+                    <p class="text-muted small flex-grow-1">This will mark the appointment as cancelled and notify the patient.</p>
+                    <button type="submit" class="btn btn-danger w-100 confirm-delete"><i class="bi bi-x-circle"></i> Cancel</button>
+                </form>
+            </div>
+        </div>
+        <a href="{% url 'appointments_list' %}" class="btn btn-outline-primary mt-3"><i class="bi bi-arrow-left"></i> Back</a>
+    </div>
+</div>
+{% endblock %}

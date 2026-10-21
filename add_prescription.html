@@ -1,0 +1,122 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}New Prescription - Alzheimer's Support{% endblock %}
+{% block page_title %}Issue Prescription{% endblock %}
+{% block sidebar_nav %}{% include 'doctor_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header"><h5><i class="bi bi-clipboard-plus"></i> New Prescription</h5></div>
+    <div class="card-body">
+        <form method="POST" id="prescriptionForm">
+            {% csrf_token %}
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Patient *</label>
+                    <select class="form-select" name="patient" required>
+                        <option value="">Select patient</option>
+                        {% for p in patients %}<option value="{{ p.id }}">{{ p.name }} ({{ p.age }}y)</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6"><label class="form-label">Diagnosis *</label><input type="text" class="form-control" name="diagnosis" required></div>
+                <div class="col-12"><label class="form-label">General Notes</label><textarea class="form-control" name="notes" rows="2"></textarea></div>
+            </div>
+
+            <h6 class="mt-4 mb-3"><i class="bi bi-capsule"></i> Medicines</h6>
+            <div id="medicineRows">
+                <div class="medicine-row p-3 mb-2" style="background:var(--gray-50);border-radius:10px;">
+                    <div class="row g-2">
+                        <div class="col-md-4"><label class="form-label">Medicine Name</label><input type="text" class="form-control" name="medicine_name[]" required></div>
+                        <div class="col-md-2"><label class="form-label">Dosage</label><input type="text" class="form-control" name="dosage[]" placeholder="e.g., 500mg"></div>
+                        <div class="col-md-3">
+                            <label class="form-label">Frequency</label>
+                            <select class="form-select frequency-select" name="frequency[]">
+                                <option value="once_daily" data-times="1">Once daily</option>
+                                <option value="twice_daily" data-times="2">Twice daily</option>
+                                <option value="thrice_daily" data-times="3">Thrice daily</option>
+                                <option value="four_times" data-times="4">Four times a day</option>
+                                <option value="weekly" data-times="1">Weekly</option>
+                                <option value="as_needed" data-times="0">As needed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3"><label class="form-label">Duration (days)</label><input type="number" class="form-control" name="duration[]" value="30"></div>
+
+                        <div class="col-12">
+                            <label class="form-label">Intake Time(s) *</label>
+                            <div class="row g-2 timing-inputs">
+                                <div class="col-md-3 timing-slot" data-slot="1"><input type="time" class="form-control" name="timing1[]" value="08:00"><small class="text-muted">Dose 1</small></div>
+                                <div class="col-md-3 timing-slot" data-slot="2" style="display:none;"><input type="time" class="form-control" name="timing2[]" value="14:00"><small class="text-muted">Dose 2</small></div>
+                                <div class="col-md-3 timing-slot" data-slot="3" style="display:none;"><input type="time" class="form-control" name="timing3[]" value="20:00"><small class="text-muted">Dose 3</small></div>
+                                <div class="col-md-3 timing-slot" data-slot="4" style="display:none;"><input type="time" class="form-control" name="timing4[]" value="22:00"><small class="text-muted">Dose 4</small></div>
+                            </div>
+                        </div>
+
+                        <div class="col-12"><label class="form-label">Instructions</label><textarea class="form-control" name="instructions[]" rows="1"></textarea></div>
+                        <div class="col-12 text-end"><button type="button" class="btn btn-sm btn-outline-primary remove-medicine-row"><i class="bi bi-trash"></i> Remove</button></div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="addMedicineRow" class="btn btn-outline-primary btn-sm"><i class="bi bi-plus"></i> Add Another Medicine</button>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Issue Prescription</button>
+                <a href="{% url 'prescriptions_list' %}" class="btn btn-outline-primary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    function updateTimingSlots(row) {
+        var select = row.querySelector('.frequency-select');
+        var count = parseInt(select.options[select.selectedIndex].getAttribute('data-times'), 10) || 0;
+        var slots = row.querySelectorAll('.timing-slot');
+        slots.forEach(function(slot) {
+            var n = parseInt(slot.getAttribute('data-slot'), 10);
+            var input = slot.querySelector('input');
+            if (n <= count) {
+                slot.style.display = '';
+                input.required = true;
+            } else {
+                slot.style.display = 'none';
+                input.required = false;
+            }
+        });
+    }
+
+    function bindRow(row) {
+        updateTimingSlots(row);
+        row.querySelector('.frequency-select').addEventListener('change', function() {
+            updateTimingSlots(row);
+        });
+    }
+
+    document.querySelectorAll('.medicine-row').forEach(bindRow);
+
+    document.getElementById('medicineRows').addEventListener('click', function(e) {
+        var btn = e.target.closest('.remove-medicine-row');
+        if (!btn) return;
+        var rows = document.querySelectorAll('.medicine-row');
+        if (rows.length > 1) {
+            btn.closest('.medicine-row').remove();
+        }
+    });
+
+    document.getElementById('addMedicineRow').addEventListener('click', function() {
+        var first = document.querySelector('.medicine-row');
+        var clone = first.cloneNode(true);
+        clone.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(function(el) { el.value = ''; });
+        clone.querySelector('input[name="duration[]"]').value = '30';
+        clone.querySelectorAll('input[type="time"]').forEach(function(el, idx) {
+            var defaults = ['08:00', '14:00', '20:00', '22:00'];
+            el.value = defaults[idx] || '08:00';
+        });
+        clone.querySelector('.frequency-select').selectedIndex = 0;
+        document.getElementById('medicineRows').appendChild(clone);
+        bindRow(clone);
+    });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Schedule Appointment - Alzheimer's Support{% endblock %}
+{% block page_title %}Schedule New Appointment{% endblock %}
+{% block sidebar_nav %}{% include 'doctor_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width:700px;">
+    <div class="card-header"><h5><i class="bi bi-calendar-plus"></i> New Appointment</h5></div>
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label">Patient *</label>
+                    <select class="form-select" name="patient" required>
+                        <option value="">Select</option>
+                        {% for p in patients %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6"><label class="form-label">Date *</label><input type="date" class="form-control" name="appointment_date" required></div>
+                <div class="col-md-6"><label class="form-label">Time *</label><input type="time" class="form-control" name="appointment_time" required></div>
+                <div class="col-12"><label class="form-label">Reason / Purpose</label><textarea class="form-control" name="reason" rows="3"></textarea></div>
+            </div>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Schedule</button>
+                <a href="{% url 'appointments_list' %}" class="btn btn-outline-primary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

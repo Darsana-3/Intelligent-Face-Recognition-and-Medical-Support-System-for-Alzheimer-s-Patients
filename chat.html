@@ -1,0 +1,77 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Chat with {{ patient.name }} - Alzheimer's Support{% endblock %}
+{% block page_title %}Chat with {{ patient.name }}{% endblock %}
+{% block sidebar_nav %}{% include 'doctor_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width:800px;">
+    <div class="card-header">
+        <h5><i class="bi bi-chat-dots"></i> {{ patient.name }}</h5>
+        <div class="card-actions"><a href="{% url 'view_patient_doctor' patient.id %}" class="btn btn-outline-primary btn-sm">View Patient</a></div>
+    </div>
+    <div class="card-body">
+        <div id="chatBox" style="height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:10px;background:var(--gray-50);border-radius:10px;">
+            {% for m in chat_messages %}
+            <div class="chat-bubble {% if m.sender_role == 'doctor' %}mine{% else %}theirs{% endif %}"
+                 style="max-width:70%;padding:10px 14px;border-radius:14px;{% if m.sender_role == 'doctor' %}align-self:flex-end;background:var(--primary);color:white;{% else %}align-self:flex-start;background:white;border:1px solid var(--gray-200);{% endif %}">
+                <div>{{ m.message }}</div>
+                <small style="opacity:.75;display:block;margin-top:4px;">{{ m.created_at|date:"M d, h:i A" }}</small>
+            </div>
+            {% empty %}
+            <div class="empty-state"><p>No messages yet. Say hello to {{ patient.name }}.</p></div>
+            {% endfor %}
+        </div>
+        <form method="POST" id="chatForm" class="d-flex gap-2 mt-3">
+            {% csrf_token %}
+            <input type="text" class="form-control" name="message" id="chatInput" placeholder="Type a message..." autocomplete="off" required>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i></button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    var chatBox = document.getElementById('chatBox');
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    var lastId = {{ chat_messages.last.id|default:0 }};
+    var pollUrl = "{% url 'doctor_chat_messages_api' patient.id %}";
+
+    function appendMessage(m) {
+        var div = document.createElement('div');
+        div.style.maxWidth = '70%';
+        div.style.padding = '10px 14px';
+        div.style.borderRadius = '14px';
+        if (m.sender_role === 'doctor') {
+            div.style.alignSelf = 'flex-end';
+            div.style.background = 'var(--primary)';
+            div.style.color = 'white';
+        } else {
+            div.style.alignSelf = 'flex-start';
+            div.style.background = 'white';
+            div.style.border = '1px solid var(--gray-200)';
+        }
+        div.innerHTML = '<div></div><small style="opacity:.75;display:block;margin-top:4px;"></small>';
+        div.querySelector('div').textContent = m.message;
+        div.querySelector('small').textContent = m.created_at;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function poll() {
+        fetch(pollUrl + '?after=' + lastId)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                (data.messages || []).forEach(function(m) {
+                    appendMessage(m);
+                    lastId = m.id;
+                });
+            })
+            .catch(function() {});
+    }
+    setInterval(poll, 4000);
+})();
+</script>
+{% endblock %}

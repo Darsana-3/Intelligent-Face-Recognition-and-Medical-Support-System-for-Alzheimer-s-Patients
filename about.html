@@ -1,0 +1,65 @@
+{% extends 'base_public.html' %}
+{% block title %}About - Alzheimer's Support{% endblock %}
+
+{% block content %}
+<section class="hero" style="padding:60px 0;">
+    <div class="container text-center hero-content">
+        <span class="badge bg-light text-primary px-3 py-2 mb-3" style="border-radius:20px;font-weight:600;">About Us</span>
+        <h1>Reimagining care for cognitive health</h1>
+        <p class="lead mx-auto" style="max-width:700px;">Alzheimer's Support blends modern AI with structured medical workflows to give Alzheimer's patients dignity, independence, and safety.</p>
+    </div>
+</section>
+
+<section class="section bg-white">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="badge" style="background:var(--primary-bg);color:var(--primary-dark);padding:6px 16px;border-radius:20px;font-weight:600;">Our Mission</span>
+                <h2 class="mt-3">Empowering memory through intelligence</h2>
+                <p class="text-muted">Alzheimer's disease affects millions worldwide. Patients struggle to recognize familiar faces, remember medications, and maintain daily routines. Caregivers carry an immense load.</p>
+                <p class="text-muted">Alzheimer's Support addresses these challenges by integrating <strong>VGG-Face deep learning</strong> for visitor identification with a structured platform for medical management — connecting patients, doctors, and caregivers in one secure ecosystem.</p>
+            </div>
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <div class="col-6"><div class="feature-card"><div class="feature-icon"><i class="bi bi-cpu"></i></div><h4>AI-First</h4><p>Embedding-based recognition without retraining.</p></div></div>
+                    <div class="col-6"><div class="feature-card"><div class="feature-icon"><i class="bi bi-heart"></i></div><h4>Patient-Centric</h4><p>Designed for cognitive accessibility.</p></div></div>
+                    <div class="col-6"><div class="feature-card"><div class="feature-icon"><i class="bi bi-shield-check"></i></div><h4>Secure</h4><p>Role-based access with hashed credentials.</p></div></div>
+                    <div class="col-6"><div class="feature-card"><div class="feature-icon"><i class="bi bi-graph-up"></i></div><h4>Scalable</h4><p>Built on Django for production deployment.</p></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background:var(--gray-50);">
+    <div class="container">
+        <div class="section-title">
+            <span class="badge">How It Works</span>
+            <h2>Three layers, one ecosystem</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto"><i class="bi bi-1-circle-fill"></i></div>
+                    <h4>Enrollment</h4>
+                    <p>Caregivers upload 3-5 photos of family and friends. The system extracts 512-dimensional facial embeddings using VGG-Face and stores them securely.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto"><i class="bi bi-2-circle-fill"></i></div>
+                    <h4>Recognition</h4>
+                    <p>When a visitor arrives, the system captures their face, computes cosine similarity with stored embeddings, and announces who they are.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto"><i class="bi bi-3-circle-fill"></i></div>
+                    <h4>Care</h4>
+                    <p>Meanwhile, doctors prescribe medications, schedule appointments, and track adherence — all reaching the patient via timely reminders.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

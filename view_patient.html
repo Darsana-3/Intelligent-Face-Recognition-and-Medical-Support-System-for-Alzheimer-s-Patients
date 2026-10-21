@@ -1,0 +1,101 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}{{ patient.name }} - Alzheimer's Support{% endblock %}
+{% block page_title %}Patient: {{ patient.name }}{% endblock %}
+{% block sidebar_nav %}{% include 'doctor_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+    <div class="col-lg-4">
+        <div class="content-card">
+            <div class="card-body text-center">
+                {% if patient.profile_pic %}<img src="{{ patient.profile_pic.url }}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;">{% else %}<span class="avatar-placeholder" style="width:100px;height:100px;font-size:2rem;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--primary),var(--accent));color:white;border-radius:50%;font-weight:700;">{{ patient.name|slice:":1" }}</span>{% endif %}
+                <h4 class="mt-3">{{ patient.name }}</h4>
+                <p class="text-muted mb-0">@{{ patient.username }}</p>
+                <p class="text-muted">{{ patient.email }}</p>
+                <hr>
+                <div class="text-start">
+                    <p><strong>Age:</strong> {{ patient.age }}, {{ patient.get_gender_display }}</p>
+                    <p><strong>Phone:</strong> {{ patient.phone }}</p>
+                    <p><strong>Address:</strong> {{ patient.address|default:"—" }}</p>
+                    <p><strong>Blood Group:</strong> {{ patient.blood_group|default:"—" }}</p>
+                    <p><strong>Alzheimer's Stage:</strong> {{ patient.get_alzheimer_stage_display }}</p>
+                    <p><strong>Medical History:</strong> {{ patient.medical_history|default:"None" }}</p>
+                    <p><strong>Allergies:</strong> {{ patient.allergies|default:"None" }}</p>
+                    <p><strong>Account Status:</strong> {% if patient.is_active %}<span class="status-badge active">Active</span>{% else %}<span class="status-badge inactive">Inactive</span>{% endif %}</p>
+                    <p><strong>Registered:</strong> {{ patient.created_at|date:"M d, Y" }}</p>
+                </div>
+                <a href="{% url 'add_note' patient.id %}" class="btn btn-primary w-100"><i class="bi bi-journal-plus"></i> Add Note</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="content-card">
+            <div class="card-header"><h5><i class="bi bi-heart-pulse"></i> Medical Details</h5></div>
+            <div class="card-body">
+                {% if medical %}
+                <div class="row g-3">
+                    <div class="col-md-6"><strong>Chronic Conditions:</strong><p class="mb-0">{{ medical.chronic_conditions|default:"None" }}</p></div>
+                    <div class="col-md-6"><strong>Past Surgeries:</strong><p class="mb-0">{{ medical.past_surgeries|default:"None" }}</p></div>
+                    <div class="col-md-6"><strong>Family History:</strong><p class="mb-0">{{ medical.family_history|default:"None" }}</p></div>
+                    <div class="col-md-6"><strong>Current Medications:</strong><p class="mb-0">{{ medical.current_medications|default:"None" }}</p></div>
+                    <div class="col-12"><strong>Notes:</strong><p class="mb-0">{{ medical.notes|default:"None" }}</p></div>
+                </div>
+                {% else %}<div class="empty-state"><p>No medical details on file</p></div>{% endif %}
+            </div>
+        </div>
+        <div class="content-card">
+            <div class="card-header"><h5><i class="bi bi-telephone-forward"></i> Emergency Contacts</h5></div>
+            <div class="card-body p-0">
+                {% if emergency_contacts %}
+                <table class="table mb-0"><thead><tr><th>Name</th><th>Relationship</th><th>Phone</th><th>Email</th><th>Address</th><th></th></tr></thead><tbody>
+                {% for c in emergency_contacts %}
+                <tr>
+                    <td>{{ c.name }}</td>
+                    <td>{{ c.relationship }}</td>
+                    <td>{{ c.phone }}</td>
+                    <td>{{ c.email|default:"—" }}</td>
+                    <td>{{ c.address|default:"—" }}</td>
+                    <td>{% if c.is_primary %}<span class="status-badge active">Primary</span>{% endif %}</td>
+                </tr>
+                {% endfor %}
+                </tbody></table>
+                {% else %}<div class="empty-state"><p>No emergency contacts on file</p></div>{% endif %}
+            </div>
+        </div>
+        <div class="content-card">
+            <div class="card-header"><h5><i class="bi bi-capsule"></i> Current Medications</h5></div>
+            <div class="card-body p-0">
+                {% if medicines %}
+                <table class="table mb-0"><thead><tr><th>Medicine</th><th>Dosage</th><th>Frequency</th><th>Time</th></tr></thead><tbody>{% for m in medicines %}<tr><td>{{ m.name }}</td><td>{{ m.dosage }}</td><td>{{ m.get_frequency_display }}</td><td>{% for t in m.timings.all %}{{ t.time|time:"h:i A" }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</td></tr>{% endfor %}</tbody></table>
+                {% else %}<div class="empty-state"><p>No medicines</p></div>{% endif %}
+            </div>
+        </div>
+        <div class="content-card">
+            <div class="card-header"><h5><i class="bi bi-clipboard2-pulse"></i> Prescriptions</h5></div>
+            <div class="card-body p-0">
+                {% if prescriptions %}
+                <table class="table mb-0"><thead><tr><th>Diagnosis</th><th>Date</th><th></th></tr></thead><tbody>{% for r in prescriptions %}<tr><td>{{ r.diagnosis }}</td><td>{{ r.created_at|date:"M d, Y" }}</td><td><a href="{% url 'view_prescription' r.id %}" class="icon-btn"><i class="bi bi-eye"></i></a></td></tr>{% endfor %}</tbody></table>
+                {% else %}<div class="empty-state"><p>No prescriptions</p></div>{% endif %}
+            </div>
+        </div>
+        <div class="content-card">
+            <div class="card-header"><h5><i class="bi bi-calendar"></i> Appointments</h5></div>
+            <div class="card-body p-0">
+                {% if appointments %}
+                <table class="table mb-0"><thead><tr><th>Date</th><th>Time</th><th>Status</th></tr></thead><tbody>{% for a in appointments %}<tr><td>{{ a.appointment_date }}</td><td>{{ a.appointment_time }}</td><td><span class="status-badge {{ a.status }}">{{ a.get_status_display }}</span></td></tr>{% endfor %}</tbody></table>
+                {% else %}<div class="empty-state"><p>No appointments</p></div>{% endif %}
+            </div>
+        </div>
+        <div class="content-card">
+            <div class="card-header"><h5><i class="bi bi-journal-text"></i> Consultation Notes</h5></div>
+            <div class="card-body">
+                {% if notes %}
+                {% for n in notes %}
+                <div class="mb-3 p-3" style="background:var(--gray-50);border-radius:10px;"><strong>{{ n.title }}</strong> <small class="text-muted">— {{ n.created_at|date:"M d, Y" }}</small><p class="mb-0 mt-1">{{ n.content }}</p></div>
+                {% endfor %}
+                {% else %}<div class="empty-state"><p>No notes yet</p></div>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

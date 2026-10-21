@@ -1,0 +1,38 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Known Faces - Alzheimer's Support{% endblock %}
+{% block page_title %}My Known Faces{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h5><i class="bi bi-people-fill"></i> Enrolled People ({{ faces.count }})</h5>
+        <div class="card-actions"><a href="{% url 'enroll_face' %}" class="btn btn-primary btn-sm"><i class="bi bi-person-plus"></i> Enroll New Face</a></div>
+    </div>
+    <div class="card-body">
+        {% if faces %}
+        <div class="row g-3">
+            {% for f in faces %}
+            <div class="col-md-4 col-lg-3">
+                <div class="face-tile">
+                    <img src="{{ f.primary_image.url }}" alt="{{ f.person_name }}">
+                    <div class="face-info">
+                        <h6>{{ f.person_name }}</h6>
+                        <div class="relationship">{{ f.relationship }}</div>
+                        <small class="text-muted d-block mt-2"><i class="bi bi-cpu"></i> {{ f.embedding_count }} embedding{{ f.embedding_count|pluralize }}</small>
+                        <a href="{% url 'delete_known_face' f.id %}" class="btn btn-outline-danger btn-sm w-100 mt-2 confirm-delete"><i class="bi bi-trash"></i> Remove</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-people"></i>
+            <p>No faces enrolled yet. Enroll family members, caregivers, and friends so the system can recognize them.</p>
+            <a href="{% url 'enroll_face' %}" class="btn btn-primary"><i class="bi bi-person-plus"></i> Enroll First Face</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Approvals - Alzheimer's Support{% endblock %}
+{% block page_title %}Patient Requests{% endblock %}
+{% block sidebar_nav %}{% include 'doctor_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header"><h5><i class="bi bi-check2-square"></i> Approval Requests</h5></div>
+    <div class="card-body p-0">
+        {% if approvals %}
+        <table class="table">
+            <thead><tr><th>Patient</th><th>Type</th><th>Description</th><th>Status</th><th>Date</th><th></th></tr></thead>
+            <tbody>
+                {% for a in approvals %}
+                <tr>
+                    <td><strong>{{ a.patient.name }}</strong></td>
+                    <td>{{ a.request_type }}</td>
+                    <td><small>{{ a.description|truncatechars:60 }}</small></td>
+                    <td><span class="status-badge {{ a.status }}">{{ a.get_status_display }}</span></td>
+                    <td><small>{{ a.created_at|date:"M d" }}</small></td>
+                    <td>{% if a.status == 'pending' %}<a href="{% url 'handle_approval' a.id %}" class="btn btn-primary btn-sm">Review</a>{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}<div class="empty-state"><i class="bi bi-check2-square"></i><p>No requests</p></div>{% endif %}
+    </div>
+</div>
+{% endblock %}

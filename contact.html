@@ -1,0 +1,81 @@
+{% extends 'base_public.html' %}
+{% block title %}Contact - Alzheimer's Support{% endblock %}
+
+{% block content %}
+<section class="hero" style="padding:60px 0;">
+    <div class="container text-center hero-content">
+        <span class="badge bg-light text-primary px-3 py-2 mb-3" style="border-radius:20px;font-weight:600;">Get In Touch</span>
+        <h1>We'd love to hear from you</h1>
+        <p class="lead mx-auto" style="max-width:600px;">Questions, partnership inquiries, or feedback — drop us a message and we'll respond promptly.</p>
+    </div>
+</section>
+
+<section class="section bg-white">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-5">
+                <h3 class="mb-4">Contact Information</h3>
+                <div class="d-flex gap-3 mb-4">
+                    <div class="feature-icon" style="width:50px;height:50px;flex-shrink:0;"><i class="bi bi-envelope"></i></div>
+                    <div>
+                        <h6 class="mb-1">Email</h6>
+                        <p class="text-muted mb-0">support@alzheimerssupport.app</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-3 mb-4">
+                    <div class="feature-icon" style="width:50px;height:50px;flex-shrink:0;"><i class="bi bi-telephone"></i></div>
+                    <div>
+                        <h6 class="mb-1">Phone</h6>
+                        <p class="text-muted mb-0">+91 98765 43210</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-3 mb-4">
+                    <div class="feature-icon" style="width:50px;height:50px;flex-shrink:0;"><i class="bi bi-geo-alt"></i></div>
+                    <div>
+                        <h6 class="mb-1">Address</h6>
+                        <p class="text-muted mb-0">Thiruvananthapuram, Kerala, India</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-3">
+                    <div class="feature-icon" style="width:50px;height:50px;flex-shrink:0;"><i class="bi bi-clock"></i></div>
+                    <div>
+                        <h6 class="mb-1">Hours</h6>
+                        <p class="text-muted mb-0">Mon - Sat: 9:00 AM - 6:00 PM</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="content-card">
+                    <div class="card-body">
+                        <h4 class="mb-4">Send a message</h4>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" name="name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" name="email" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Subject</label>
+                                    <input type="text" class="form-control" name="subject">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Message</label>
+                                    <textarea class="form-control" name="message" rows="5" required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i> Send Message</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

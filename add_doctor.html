@@ -1,0 +1,39 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Add Doctor - Alzheimer's Support{% endblock %}
+{% block page_title %}Add New Doctor{% endblock %}
+{% block sidebar_nav %}{% include 'admin_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header"><h5><i class="bi bi-person-plus"></i> Doctor Registration</h5></div>
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data" class="js-validate" data-check-username="1" data-check-username-role="doctor" novalidate>
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-md-6"><label class="form-label">Full Name *</label><input type="text" class="form-control" name="name" required></div>
+                <div class="col-md-6"><label class="form-label">Email *</label><input type="email" class="form-control" name="email" required></div>
+                <div class="col-md-6"><label class="form-label">Username *</label><input type="text" class="form-control" name="username" required></div>
+                <div class="col-md-6"><label class="form-label">Password *</label><input type="password" class="form-control" name="password" required></div>
+                <div class="col-md-6"><label class="form-label">Phone *</label><input type="tel" class="form-control" name="phone" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10"></div>
+                <div class="col-md-6">
+                    <label class="form-label">Specialization *</label>
+                    <select class="form-select" name="specialization" required>
+                        <option value="neurologist">Neurologist</option>
+                        <option value="psychiatrist">Psychiatrist</option>
+                        <option value="geriatrician">Geriatrician</option>
+                        <option value="general">General Physician</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="col-md-6"><label class="form-label">Qualification *</label><input type="text" class="form-control" name="qualification" placeholder="MBBS, MD, etc." required></div>
+                <div class="col-md-6"><label class="form-label">Experience (Years)</label><input type="number" class="form-control" name="experience_years" min="0"></div>
+                <div class="col-12"><label class="form-label">Profile Picture</label><input type="file" class="form-control" name="profile_pic" accept="image/*"></div>
+            </div>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Add Doctor</button>
+                <a href="{% url 'doctors_list' %}" class="btn btn-outline-primary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Recognition History - Alzheimer's Support{% endblock %}
+{% block page_title %}Recognition History{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header"><h5><i class="bi bi-clock-history"></i> Last 50 Recognition Attempts</h5></div>
+    <div class="card-body p-0">
+        {% if logs %}
+        <table class="table">
+            <thead><tr><th>Capture</th><th>Recognized</th><th>Relationship</th><th>Confidence</th><th>Result</th><th>Time</th></tr></thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{% if log.captured_image %}<img src="{{ log.captured_image.url }}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">{% else %}—{% endif %}</td>
+                    <td><strong>{{ log.recognized_person }}</strong></td>
+                    <td>{{ log.relationship|default:"—" }}</td>
+                    <td>{{ log.confidence }}%</td>
+                    <td>{% if log.is_match %}<span class="status-badge active">Match</span>{% else %}<span class="status-badge inactive">No Match</span>{% endif %}</td>
+                    <td><small>{{ log.created_at|date:"M d, H:i:s" }}</small></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}<div class="empty-state"><i class="bi bi-clock-history"></i><p>No recognition history yet</p></div>{% endif %}
+    </div>
+</div>
+{% endblock %}

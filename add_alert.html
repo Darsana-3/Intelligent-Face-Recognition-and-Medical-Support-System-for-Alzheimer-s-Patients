@@ -1,0 +1,35 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Add Alert - Alzheimer's Support{% endblock %}
+{% block page_title %}Add Alert{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width:600px;">
+    <div class="card-header"><h5><i class="bi bi-bell-fill"></i> New Alert</h5></div>
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-md-8"><label class="form-label">Title *</label><input type="text" class="form-control" name="title" required></div>
+                <div class="col-md-4">
+                    <label class="form-label">Type</label>
+                    <select class="form-select" name="alert_type">
+                        <option value="custom">Custom</option>
+                        <option value="appointment">Appointment</option>
+                        <option value="hydration">Hydration</option>
+                        <option value="exercise">Exercise</option>
+                        <option value="routine">Daily Routine</option>
+                    </select>
+                </div>
+                <div class="col-md-6"><label class="form-label">Date *</label><input type="date" class="form-control" name="alert_date" required></div>
+                <div class="col-md-6"><label class="form-label">Time *</label><input type="time" class="form-control" name="alert_time" required></div>
+                <div class="col-12"><label class="form-label">Description</label><textarea class="form-control" name="description" rows="3"></textarea></div>
+            </div>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Add</button>
+                <a href="{% url 'alerts_list' %}" class="btn btn-outline-primary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

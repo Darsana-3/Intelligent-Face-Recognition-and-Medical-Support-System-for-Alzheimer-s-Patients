@@ -1,0 +1,40 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Appointments - Alzheimer's Support{% endblock %}
+{% block page_title %}Appointments{% endblock %}
+{% block sidebar_nav %}{% include 'doctor_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h5><i class="bi bi-calendar-event"></i> Appointments</h5>
+        <div class="card-actions d-flex gap-2">
+            <select class="form-select form-select-sm" onchange="window.location='?status='+this.value">
+                <option value="">All</option>
+                <option value="scheduled" {% if status == 'scheduled' %}selected{% endif %}>Scheduled</option>
+                <option value="completed" {% if status == 'completed' %}selected{% endif %}>Completed</option>
+                <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+            <a href="{% url 'schedule_appointment' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Schedule</a>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        {% if appointments %}
+        <table class="table">
+            <thead><tr><th>Patient</th><th>Date</th><th>Time</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for a in appointments %}
+                <tr>
+                    <td><strong>{{ a.patient.name }}</strong></td>
+                    <td>{{ a.appointment_date }}</td>
+                    <td>{{ a.appointment_time }}</td>
+                    <td><small>{{ a.reason|default:"—"|truncatechars:40 }}</small></td>
+                    <td><span class="status-badge {{ a.status }}">{{ a.get_status_display }}</span></td>
+                    <td><a href="{% url 'update_appointment' a.id %}" class="icon-btn"><i class="bi bi-pencil"></i></a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}<div class="empty-state"><i class="bi bi-calendar-x"></i><p>No appointments</p></div>{% endif %}
+    </div>
+</div>
+{% endblock %}

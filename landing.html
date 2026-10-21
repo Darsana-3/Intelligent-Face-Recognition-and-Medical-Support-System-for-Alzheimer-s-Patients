@@ -1,0 +1,136 @@
+{% extends 'base_public.html' %}
+{% load static %}
+{% block title %}Alzheimer's Support - Intelligent Care for Alzheimer's Patients{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 hero-content">
+                <span class="badge bg-light text-primary px-3 py-2 mb-3" style="border-radius:20px;font-weight:600;">
+                    <i class="bi bi-shield-check"></i> AI-Powered Healthcare
+                </span>
+                <h1>Compassionate Care, Powered by <span class="highlight">Intelligence</span></h1>
+                <p class="lead">An integrated platform combining face recognition AI with structured medical management — helping Alzheimer's patients live safer, more independent lives.</p>
+                <div class="hero-buttons">
+                    <a href="{% url 'patient_register' %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-person-plus"></i> Get Started
+                    </a>
+                    <a href="{% url 'features' %}" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-arrow-right-circle"></i> Explore Features
+                    </a>
+                </div>
+                <div class="mt-4 d-flex gap-4 flex-wrap">
+                    <div><i class="bi bi-check-circle-fill text-success"></i> <strong>HIPAA-Ready</strong></div>
+                    <div><i class="bi bi-check-circle-fill text-success"></i> <strong>VGG-Face AI</strong></div>
+                    <div><i class="bi bi-check-circle-fill text-success"></i> <strong>24/7 Reminders</strong></div>
+                </div>
+            </div>
+            <div class="col-lg-6 hero-image mt-5 mt-lg-0">
+                <div class="floating-card">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div style="width:50px;height:50px;border-radius:12px;background:var(--primary-bg);display:flex;align-items:center;justify-content:center;">
+                            <i class="bi bi-camera-fill" style="color:var(--primary);font-size:1.4rem;"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Face Recognized</h6>
+                            <small class="text-muted">2 seconds ago</small>
+                        </div>
+                        <span class="status-badge active ms-auto">Match</span>
+                    </div>
+                    <h4 class="mb-1">This is your daughter,</h4>
+                    <h3 style="color:var(--primary);">Priya</h3>
+                    <p class="text-muted mb-3">Confidence: 94.2% | VGG-Face Embedding</p>
+                    <div class="d-flex gap-2">
+                        <div class="flex-fill" style="height:8px;background:var(--gray-100);border-radius:4px;overflow:hidden;">
+                            <div style="height:100%;width:94%;background:linear-gradient(90deg,var(--primary),var(--accent));"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="floating-card mt-4" style="background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;">
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="bi bi-capsule" style="font-size:2rem;"></i>
+                        <div>
+                            <small style="opacity:.85;">Next reminder</small>
+                            <h5 class="mb-0 text-white">Donepezil 10mg at 8:00 PM</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES PREVIEW -->
+<section class="section bg-white">
+    <div class="container">
+        <div class="section-title">
+            <span class="badge">Core Capabilities</span>
+            <h2>Everything you need in one platform</h2>
+            <p>Built around three pillars: identity recognition, medication management, and care coordination.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-camera-video"></i></div>
+                    <h4>AI Face Recognition</h4>
+                    <p>Deep-learning embeddings via VGG-Face identify family, caregivers, and visitors instantly — with voice announcements.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-alarm"></i></div>
+                    <h4>Medicine Reminders</h4>
+                    <p>Doctor-prescribed and self-added medications with smart scheduling, adherence tracking, and missed-dose alerts.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-people"></i></div>
+                    <h4>Care Network</h4>
+                    <p>Connect patients with doctors and emergency contacts for seamless, coordinated care across the journey.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-calendar-check"></i></div>
+                    <h4>Appointment Management</h4>
+                    <p>Schedule, track, and never miss medical appointments with built-in calendar reminders.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-shield-lock"></i></div>
+                    <h4>Role-Based Access</h4>
+                    <p>Admin, doctor, and patient roles with secure authentication and granular permissions.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-megaphone"></i></div>
+                    <h4>Voice Announcements</h4>
+                    <p>Text-to-speech announces recognized visitors aloud — reducing anxiety for patients with memory loss.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CALL TO ACTION -->
+<section class="section" style="background:linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));">
+    <div class="container text-center">
+        <h2 style="font-size:2.4rem;font-weight:800;">Ready to enhance care for your loved one?</h2>
+        <p class="lead mt-3 mb-4" style="color:var(--gray-600);">Join Alzheimer's Support today and bring intelligent, compassionate support into daily routines.</p>
+        <a href="{% url 'patient_register' %}" class="btn btn-primary btn-lg">
+            <i class="bi bi-person-plus"></i> Register as Patient
+        </a>
+        <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg ms-2">
+            <i class="bi bi-box-arrow-in-right"></i> Login
+        </a>
+    </div>
+</section>
+
+{% endblock %}

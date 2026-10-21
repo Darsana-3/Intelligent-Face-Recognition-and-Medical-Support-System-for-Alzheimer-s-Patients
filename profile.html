@@ -1,0 +1,29 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Profile - Alzheimer's Support{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+{% block sidebar_nav %}{% include 'doctor_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width:800px;">
+    <div class="card-header"><h5><i class="bi bi-person-circle"></i> Doctor Profile</h5></div>
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data" class="js-validate" novalidate>
+            {% csrf_token %}
+            <div class="text-center mb-4">
+                {% if doctor.profile_pic %}<img src="{{ doctor.profile_pic.url }}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;">{% else %}<span class="avatar-placeholder" style="width:100px;height:100px;font-size:2rem;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--primary),var(--accent));color:white;border-radius:50%;font-weight:700;">{{ doctor.name|slice:":1" }}</span>{% endif %}
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6"><label class="form-label">Name</label><input type="text" class="form-control" name="name" value="{{ doctor.name }}"></div>
+                <div class="col-md-6"><label class="form-label">Email</label><input type="email" class="form-control" name="email" value="{{ doctor.email }}"></div>
+                <div class="col-md-6"><label class="form-label">Phone</label><input type="tel" class="form-control" name="phone" value="{{ doctor.phone }}" inputmode="numeric" pattern="[0-9]{10}" maxlength="10"></div>
+                <div class="col-md-6"><label class="form-label">Specialization</label><input type="text" class="form-control" value="{{ doctor.get_specialization_display }}" disabled></div>
+                <div class="col-md-6"><label class="form-label">Qualification</label><input type="text" class="form-control" name="qualification" value="{{ doctor.qualification }}"></div>
+                <div class="col-md-6"><label class="form-label">Experience (Years)</label><input type="number" class="form-control" name="experience_years" value="{{ doctor.experience_years }}"></div>
+                <div class="col-md-6"><label class="form-label">New Password (leave blank to keep)</label><input type="password" class="form-control" name="password"></div>
+                <div class="col-md-6"><label class="form-label">Profile Picture</label><input type="file" class="form-control" name="profile_pic" accept="image/*"></div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-4"><i class="bi bi-check-circle"></i> Update</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

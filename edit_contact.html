@@ -1,0 +1,36 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Edit Contact - Alzheimer's Support{% endblock %}
+{% block page_title %}Edit Contact{% endblock %}
+{% block sidebar_nav %}{% include 'user_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card" style="max-width:700px;">
+    <div class="card-header"><h5><i class="bi bi-pencil-square"></i> Edit Contact</h5></div>
+    <div class="card-body">
+        <form method="POST" class="js-validate" data-restrict-email-domain="1" novalidate>
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-md-6"><label class="form-label">Full Name</label><input type="text" class="form-control" name="name" value="{{ contact.name }}" required></div>
+                <div class="col-md-6"><label class="form-label">Relationship</label><input type="text" class="form-control" name="relationship" value="{{ contact.relationship }}" required></div>
+                <div class="col-md-6"><label class="form-label">Phone</label><input type="tel" class="form-control" name="phone" value="{{ contact.phone }}" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10"></div>
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" value="{{ contact.email|default:'' }}">
+                    <small class="form-text text-muted">Google/Gmail, Yahoo, Outlook/Hotmail, MSN, etc. Leave blank if none.</small>
+                </div>
+                <div class="col-12"><label class="form-label">Address</label><textarea class="form-control" name="address" rows="2">{{ contact.address|default:'' }}</textarea></div>
+                <div class="col-12">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="is_primary" id="is_primary" {% if contact.is_primary %}checked{% endif %}>
+                        <label class="form-check-label" for="is_primary">Primary Contact</label>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Update</button>
+                <a href="{% url 'contacts_list' %}" class="btn btn-outline-primary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

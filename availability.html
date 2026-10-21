@@ -1,0 +1,77 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}My Availability - Alzheimer's Support{% endblock %}
+{% block page_title %}Weekly Availability{% endblock %}
+{% block sidebar_nav %}{% include 'doctor_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header"><h5><i class="bi bi-calendar-plus"></i> Add a Time Slot</h5></div>
+    <div class="card-body">
+        <p class="text-muted">Enter a time range and the number of patients you can see in it — we'll automatically split it into equal, individually-bookable slots. For example, 08:00 AM - 10:00 AM for 12 patients creates 12 slots of 10 minutes each; once a patient books a slot, no one else can book it.</p>
+        <form method="POST" class="row g-3 align-items-end">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add">
+            <div class="col-md-3">
+                <label class="form-label">Day *</label>
+                <select class="form-select" name="day_of_week" required>
+                    <option value="">Select day</option>
+                    {% for code, label in days %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Start Time *</label>
+                <input type="time" class="form-control" name="start_time" required>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">End Time *</label>
+                <input type="time" class="form-control" name="end_time" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Number of Patients *</label>
+                <input type="number" min="1" class="form-control" name="max_patients" value="10" required>
+                <small class="form-text text-muted">Time range ÷ this number = length of each slot.</small>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-plus-lg"></i> Add Slot</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% for group in day_groups %}
+<div class="content-card">
+    <div class="card-header"><h5><i class="bi bi-calendar-day"></i> {{ group.label }}</h5></div>
+    <div class="card-body p-0">
+        {% if group.slots %}
+        <table class="table mb-0">
+            <thead><tr><th>Start</th><th>End</th><th>Capacity</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for slot in group.slots %}
+                <tr>
+                    <td>{{ slot.start_time|time:"h:i A" }}</td>
+                    <td>{{ slot.end_time|time:"h:i A" }}</td>
+                    <td>{{ slot.max_patients }}</td>
+                    <td><span class="status-badge {% if slot.is_active %}active{% else %}inactive{% endif %}">{% if slot.is_active %}Active{% else %}Disabled{% endif %}</span></td>
+                    <td class="d-flex gap-2">
+                        <form method="POST" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="toggle">
+                            <input type="hidden" name="slot_id" value="{{ slot.id }}">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">{% if slot.is_active %}Disable{% else %}Enable{% endif %}</button>
+                        </form>
+                        <form method="POST" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="slot_id" value="{{ slot.id }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger confirm-delete"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}<div class="empty-state py-3"><p class="mb-0">No slots added for {{ group.label }} yet.</p></div>{% endif %}
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

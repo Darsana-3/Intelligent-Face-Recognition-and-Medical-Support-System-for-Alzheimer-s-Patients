@@ -1,0 +1,31 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Prescriptions - Alzheimer's Support{% endblock %}
+{% block page_title %}My Prescriptions{% endblock %}
+{% block sidebar_nav %}{% include 'doctor_app/_sidebar.html' %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h5><i class="bi bi-clipboard2-pulse"></i> Issued Prescriptions</h5>
+        <div class="card-actions"><a href="{% url 'add_prescription' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> New Prescription</a></div>
+    </div>
+    <div class="card-body p-0">
+        {% if prescriptions %}
+        <table class="table">
+            <thead><tr><th>Patient</th><th>Diagnosis</th><th>Medicines</th><th>Date</th><th></th></tr></thead>
+            <tbody>
+                {% for p in prescriptions %}
+                <tr>
+                    <td><strong>{{ p.patient.name }}</strong></td>
+                    <td>{{ p.diagnosis }}</td>
+                    <td>{{ p.medicines.count }}</td>
+                    <td>{{ p.created_at|date:"M d, Y" }}</td>
+                    <td><a href="{% url 'view_prescription' p.id %}" class="icon-btn"><i class="bi bi-eye"></i></a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}<div class="empty-state"><i class="bi bi-clipboard2-x"></i><p>No prescriptions yet</p><a href="{% url 'add_prescription' %}" class="btn btn-primary">Create First</a></div>{% endif %}
+    </div>
+</div>
+{% endblock %}
